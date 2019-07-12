@@ -7,6 +7,8 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.util.*
 
 
@@ -55,23 +57,79 @@ class ConnectThread(
             if (this.mmSocket!!.isConnected() == true) {
                 cancel()
             }
-            System.out.print("连接成功")
-            Log.d("lylog"," 连接成功 ")
+            Log.d("lylog", " 连接成功 ")
         } catch (connectException: IOException) {
-            System.out.print("连接失败")
-            Log.d("lylog"," 连接失败 ")
+            Log.d("lylog", " 连接失败 ")
             return
         }
-    }
 
-    private fun showToast(s: String) {
-        Toast.makeText(mContext, s, Toast.LENGTH_SHORT).show()
+        if (mmSocket != null) {
+            ConnectedThreadgo(mmSocket)
+        }
     }
 
     /** Will cancel an in-progress connection, and close the socket  */
     fun cancel() {
         try {
             mmSocket!!.close()
+        } catch (e: IOException) {
+        }
+
+    }
+}
+
+class ConnectedThreadgo(private var mmSocket: BluetoothSocket):Thread() {
+    private val mmInStream: InputStream?
+    private val mmOutStream: OutputStream?
+
+    init {
+        var tmpIn: InputStream? = null
+        var tmpOut: OutputStream? = null
+
+        // Get the input and output streams, using temp objects because
+        // member streams are final
+        try {
+            tmpIn = mmSocket.inputStream
+            tmpOut = mmSocket.outputStream
+        } catch (e: IOException) {
+        }
+
+        mmInStream = tmpIn
+        mmOutStream = tmpOut
+    }
+
+    override fun run() {
+        val buffer = ByteArray(1024)  // buffer store for the stream
+        var bytes: Int // bytes returned from read()
+
+        // Keep listening to the InputStream until an exception occurs
+        while (true) {
+            try {
+                // Read from the InputStream
+                bytes = mmInStream!!.read(buffer)
+                // Send the obtained bytes to the UI Activity
+//                mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
+//                    .sendToTarget()
+            } catch (e: IOException) {
+                break
+            }
+
+        }
+    }
+
+    /* Call this from the main Activity to send data to the remote device */
+    fun write(bytes: ByteArray) {
+        try {
+            mmOutStream!!.write(bytes)
+        } catch (e: IOException) {
+        }
+
+    }
+
+    /* Call this from the main Activity to shutdown the connection */
+    fun cancel() {
+        try {
+            mmSocket.close()
         } catch (e: IOException) {
         }
 
