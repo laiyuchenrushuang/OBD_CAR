@@ -107,4 +107,9 @@ class MainActivity : AppCompatActivity(), MyReceiver.BTCallBack {
         super.onResume()
         adapter!!.startDiscovery()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(myReceiver);
+    }
 }
