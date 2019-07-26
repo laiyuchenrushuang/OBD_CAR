@@ -9,7 +9,13 @@
 * AT SP 0 ：随机帧，自动的，目前知道5,6,7
 * AT SH 7DF  :是选择can500 波段11位的
 * AT SH DB 33 F1 :是选择can500 波段29位的
+* AT DP ： 查看波段
+
+* 工作记录：
+  1. 0723 麓山建国 Jeep车 寻址： 18 DA 10 F1，读取vin指令：22 F1 90
 
 # 技术点
  *  蓝牙建立soket,看代码bt_client 和bt_server部分
  *  ![image](https://github.com/laiyuchenrushuang/OBD_CAR/blob/master/lizi.png)
+ 
+ 
